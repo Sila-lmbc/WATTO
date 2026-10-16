@@ -708,7 +708,13 @@ select:focus {
 }
 
 
-
+/* Allow touch dragging on task bubbles */
+#task-list li,
+.calendar-task {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
 
 
  </style>
@@ -1185,6 +1191,7 @@ function showTasks() {
         }
 
         item.dataset.bubbleId = String(task.id);
+        item.dataset.taskIndex = index;
         item.draggable = true;
 
         const label = document.createElement("span");
@@ -1249,6 +1256,7 @@ if (task.important) {
 
             const item = document.createElement("div");
             item.className = "calendar-task";
+            item.dataset.taskIndex = index;
             item.draggable = true;
 
             const label = document.createElement("span");
@@ -1298,13 +1306,108 @@ if (task.important) {
         startTaskBubbles();
 }
 
+let touchDrag = null;
 
+document.addEventListener("pointerdown", function(event) {
+    if (event.pointerType !== "touch") return;
+
+    const item = event.target.closest("#task-list li, .calendar-task");
+    if (!item || event.target.closest("button")) return;
+
+    const index = Number(item.dataset.taskIndex);
+    if (!Number.isInteger(index) || !tasks[index]) return;
+
+    touchDrag = {
+        index: index,
+        item: item,
+        startX: event.clientX,
+        startY: event.clientY,
+        moved: false,
+        clone: null
+    };
+});
+
+document.addEventListener("pointermove", function(event) {
+    if (!touchDrag) return;
+
+    const drag = touchDrag;
+    const dx = event.clientX - drag.startX;
+    const dy = event.clientY - drag.startY;
+
+    if (!drag.moved && Math.hypot(dx, dy) < 8) return;
+
+    event.preventDefault();
+
+    if (!drag.moved) {
+        drag.moved = true;
+
+        const rect = drag.item.getBoundingClientRect();
+        const clone = drag.item.cloneNode(true);
+
+        clone.style.position = "fixed";
+        clone.style.left = rect.left + "px";
+        clone.style.top = rect.top + "px";
+        clone.style.width = rect.width + "px";
+        clone.style.zIndex = "99999";
+        clone.style.pointerEvents = "none";
+        clone.style.opacity = "0.9";
+        clone.style.margin = "0";
+
+        document.body.appendChild(clone);
+        drag.clone = clone;
+    }
+
+    drag.clone.style.left =
+        event.clientX - drag.clone.offsetWidth / 2 + "px";
+
+    drag.clone.style.top =
+        event.clientY - drag.clone.offsetHeight / 2 + "px";
+}, { passive: false });
+
+document.addEventListener("pointerup", function(event) {
+    if (!touchDrag) return;
+
+    const drag = touchDrag;
+    touchDrag = null;
+
+    if (drag.clone) drag.clone.remove();
+
+    if (!drag.moved) return;
+
+    event.preventDefault();
+
+    const target = document.elementFromPoint(
+        event.clientX,
+        event.clientY
+    );
+
+    const dayBox = target && target.closest(".day-tasks");
+    const taskPool = target && target.closest("#task-pool");
+
+    if (dayBox) {
+        tasks[drag.index].day = dayBox.dataset.day;
+    } else if (taskPool) {
+        tasks[drag.index].day = null;
+    } else {
+        return;
+    }
+
+    saveTasks();
+    showTasks();
+}, { passive: false });
+
+document.addEventListener("pointercancel", function() {
+    if (!touchDrag) return;
+
+    if (touchDrag.clone) touchDrag.clone.remove();
+    touchDrag = null;
+});
 
 
 let taskBubbleFrame = null;
 
 const bubblePositions = new Map();
-
+  
 function startTaskBubbles() {
     if (taskBubbleFrame !== null) {
         cancelAnimationFrame(taskBubbleFrame);
@@ -1469,7 +1572,7 @@ items.forEach(function(item, index) {
                 const dx = bx - ax;
                 const dy = by - ay;
 
-                const overlapX =
+              const overlapX =
                     (a.w + b.w) / 2 - Math.abs(dx);
                 const overlapY =
                     (a.h + b.h) / 2 - Math.abs(dy);
