@@ -1,0 +1,624 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Watto — What to do?</title>
+
+    <style>
+
+    body {
+        background-color: #F5EFE5;
+        color: #49382F;
+        font-family: "Trebuchet MS", sans-serif;
+        margin: 0;
+        padding: 40px;
+    }
+
+    h1 {
+        font-size: 48px;
+        margin-bottom: 8px;
+        letter-spacing: -2px;
+    }
+
+    p {
+        font-size: 16px;
+        color: #827365;
+        line-height: 1.6;
+    }
+
+    
+h2 {
+    margin-top: 40px;
+    font-size: 22px;
+}
+
+input {
+    padding: 12px;
+    border: 1px solid #D8C8B7;
+    border-radius: 10px;
+    background-color: #FFFCF7;
+    font-size: 14px;
+}
+
+
+select {
+    padding: 12px;
+    border: 1px solid #D8C8B7;
+    border-radius: 10px;
+    background-color: #FFFCF7;
+    color: #49382F;
+    font-size: 14px;
+    margin: 8px 0;
+}
+
+
+button {
+    padding: 12px 16px;
+    border: none;
+    border-radius: 10px;
+    background-color: #C8795B;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+    
+
+#task-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+    max-width: 450px;
+}
+
+#task-list li {
+    background-color: #FFFCF7;
+    border: 1px solid #E5D8C9;
+    border-radius: 999px;
+    padding: 14px 20px;
+    margin-bottom: 10px;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+    transition: background-color 0.2s ease, 
+                border-color 0.2s ease;
+
+                  outline: 2px solid red;
+}
+
+
+#task-list li.completed {
+    background-color: #E5EBDD;
+    border-color: #C7D6BC;
+    color: #687A5F;
+}
+
+#task-list li.completed .task-label {
+    text-decoration: line-through;
+}
+
+.calendar-task.completed {
+    background-color: #E5EBDD;
+    border-color: #C7D6BC;
+    color: #687A5F;
+}
+
+.calendar-task.completed .task-label {
+    text-decoration: line-through;
+}
+
+.delete-task {
+    text-decoration: none !important;
+}
+
+
+
+
+
+#task-list li input[type="checkbox"] {
+    padding: 0;
+    border: none;
+    background: transparent;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    accent-color: #879A76;
+    cursor: pointer;
+}
+
+
+#week-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(130px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+}
+
+.day-column {
+    background-color: #F0E7DA;
+    border: 1px solid #E5D8C9;
+    border-radius: 18px;
+    padding: 14px;
+    min-height: 220px;
+}
+
+.day-column h3 {
+    font-size: 15px;
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: #49382F;
+}
+
+.day-tasks {
+    min-height: 160px;
+}
+
+
+#task-list li,
+.calendar-task {
+    cursor: grab;
+}
+
+#task-list li:active,
+.calendar-task:active {
+    cursor: grabbing;
+}
+
+.day-tasks {
+    min-height: 160px;
+}
+
+.calendar-task {
+    background-color: #FFFCF7;
+    border: 1px solid #E5D8C9;
+    border-radius: 14px;
+    padding: 9px 11px;
+    margin-bottom: 8px;
+    overflow-wrap: anywhere;
+    font-size: 13px;
+}
+
+.calendar-task.completed {
+    background-color: #E5EBDD;
+    border-color: #C7D6BC;
+    color: #687A5F;
+    text-decoration: line-through;
+}
+
+
+.delete-task {
+    background: transparent;
+    color: #B49A87;
+    border: none;
+    padding: 0 0 2px 8px;
+    margin-left: auto;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.delete-task:hover {
+    color: #C8795B;
+}
+
+#task-list li,
+.calendar-task {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.task-label {
+    flex: 1;
+    overflow-wrap: anywhere;
+}
+
+.delete-task {
+    text-decoration: none !important;
+}
+
+
+/* Watto — yumuşakça süzülen görevler */
+@keyframes watto-float {
+    0%, 100% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    50% {
+        transform: translate3d(0, -10px, 0);
+    }
+}
+
+#task-list li {
+    animation: watto-float 4s ease-in-out infinite;
+    will-change: transform;
+}
+
+#task-list li:nth-child(2n) {
+    animation-delay: -1.5s;
+}
+
+#task-list li:nth-child(3n) {
+    animation-delay: -2.5s;
+}
+
+#task-list li:hover,
+#task-list li:active {
+    animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #task-list li {
+        animation: none;
+    }
+}
+
+
+</style>
+
+
+</head>
+
+<body>
+
+    <h1>Watto</h1>
+    <p>What to do? Let's figure it out.</p>
+
+
+<div id="category-section">
+    <h2>My categories 🌱</h2>
+    <input
+        type="text"
+        id="category-input"
+        placeholder="New category name..."
+    >
+    <button id="add-category-button" type="button">
+        Add category
+    </button>
+    <div id="category-list"></div>
+</div>
+
+       <input type="text" placeholder="What do you need to do?">
+       
+<select id="task-category">
+    <option value="">Choose a category</option>
+</select>
+
+   <button id="add-task-button" type="button">Add task</button>
+
+    <ul id="task-list"></ul>
+
+    <h2>Today's Little Tasks</h2>
+
+
+    
+<h2>My week 🌷</h2>
+
+<div id="week-calendar">
+    <div class="day-column">
+        <h3>Monday</h3>
+        <div class="day-tasks" data-day="Monday"></div>
+    </div>
+
+    <div class="day-column">
+        <h3>Tuesday</h3>
+        <div class="day-tasks" data-day="Tuesday"></div>
+    </div>
+
+    <div class="day-column">
+        <h3>Wednesday</h3>
+        <div class="day-tasks" data-day="Wednesday"></div>
+    </div>
+
+    <div class="day-column">
+        <h3>Thursday</h3>
+        <div class="day-tasks" data-day="Thursday"></div>
+    </div>
+
+    <div class="day-column">
+        <h3>Friday</h3>
+        <div class="day-tasks" data-day="Friday"></div>
+    </div>
+
+    <div class="day-column">
+        <h3>Saturday</h3>
+        <div class="day-tasks" data-day="Saturday"></div>
+    </div>
+
+    <div class="day-column">
+        <h3>Sunday</h3>
+        <div class="day-tasks" data-day="Sunday"></div>
+    </div>
+</div>
+
+
+ 
+
+
+   
+
+<script>
+
+   const taskInput = document.querySelector('input[placeholder="What do you need to do?"]');
+const addButton = document.querySelector("#add-task-button");
+    const taskList = document.querySelector("#task-list");
+
+    // Kayıtlı görevleri al
+    let tasks = JSON.parse(localStorage.getItem("wattoTasks")) || [];
+
+
+let categories = JSON.parse(localStorage.getItem("wattoCategories")) || [];
+
+const categoryInput = document.querySelector("#category-input");
+const addCategoryButton = document.querySelector("#add-category-button");
+const categoryList = document.querySelector("#category-list");
+const taskCategory = document.querySelector("#task-category");
+
+
+function showCategories() {
+    categoryList.innerHTML = "";
+    taskCategory.innerHTML = '<option value="">Choose a category</option>';
+
+    categories.forEach(function(category) {
+        const categoryTag = document.createElement("span");
+        categoryTag.textContent = category + " ";
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.textContent = "×";
+        deleteButton.title = "Delete category";
+
+        deleteButton.addEventListener("click", function() {
+            categories = categories.filter(function(item) {
+                return item !== category;
+            });
+
+            localStorage.setItem("wattoCategories", JSON.stringify(categories));
+            showCategories();
+        });
+
+        categoryTag.appendChild(deleteButton);
+        categoryList.appendChild(categoryTag);
+
+        const option = document.createElement("option");
+        option.value = category;
+        option.textContent = category;
+        taskCategory.appendChild(option);
+    });
+}
+
+addCategoryButton.addEventListener("click", function() {
+    const categoryName = categoryInput.value.trim();
+
+    if (categoryName === "") {
+        alert("Please enter a category name! 🌱");
+        return;
+    }
+
+    if (categories.some(function(category) {
+        return category.toLowerCase() === categoryName.toLowerCase();
+    })) {
+        alert("This category already exists!");
+        return;
+    }
+
+    categories.push(categoryName);
+    localStorage.setItem("wattoCategories", JSON.stringify(categories));
+
+    categoryInput.value = "";
+    showCategories();
+});
+
+showCategories();
+
+
+    // Eski görevleri yeni sisteme uyarla
+    
+tasks = tasks.map(function(task) {
+    if (typeof task === "string") {
+        return { text: task, done: false, day: null };
+    }
+
+    if (task.day === undefined) {
+        task.day = null;
+    }
+
+    return task;
+});
+
+    // Görevleri ekranda göster
+    
+
+function showTasks() {
+    taskList.innerHTML = "";
+
+    tasks.forEach(function(task, index) {
+if (task.day != null) {
+    return;
+}
+       
+const newTask = document.createElement("li");
+newTask.draggable = true;
+
+const label = document.createElement("span");
+label.classList.add("task-label");
+label.textContent = task.text;
+
+const deleteButton = document.createElement("button");
+deleteButton.type = "button";
+deleteButton.textContent = "×";
+deleteButton.classList.add("delete-task");
+deleteButton.title = "Delete task";
+
+deleteButton.addEventListener("click", function(event) {
+    event.stopPropagation();
+
+    tasks.splice(index, 1);
+
+    localStorage.setItem(
+        "wattoTasks",
+        JSON.stringify(tasks)
+    );
+
+    showTasks();
+});
+
+newTask.appendChild(label);
+newTask.appendChild(deleteButton);
+
+
+        if (task.done) {
+            newTask.classList.add("completed");
+        }
+
+        // Görevi tamamla veya tamamlanmamış hâle getir
+        newTask.addEventListener("click", function() {
+            task.done = !task.done;
+
+            localStorage.setItem(
+                "wattoTasks",
+                JSON.stringify(tasks)
+            );
+
+            showTasks();
+        });
+
+        // Sürüklemeye başladığımız görevi hatırla
+        newTask.addEventListener("dragstart", function(event) {
+            event.dataTransfer.setData("text/plain", String(index));
+        });
+
+        taskList.appendChild(newTask);
+    });
+
+    // Daha önce bir güne yerleştirilmiş görevleri göster
+    document.querySelectorAll(".day-tasks").forEach(function(dayBox) {
+        dayBox.innerHTML = "";
+
+        tasks.forEach(function(task, index) {
+            if (task.day === dayBox.dataset.day) {
+                
+const dayTask = document.createElement("div");
+dayTask.classList.add("calendar-task");
+
+const dayLabel = document.createElement("span");
+dayLabel.classList.add("task-label");
+dayLabel.textContent = task.text;
+
+const dayDeleteButton = document.createElement("button");
+dayDeleteButton.type = "button";
+dayDeleteButton.textContent = "×";
+dayDeleteButton.classList.add("delete-task");
+dayDeleteButton.title = "Delete task";
+
+dayDeleteButton.addEventListener("click", function(event) {
+    event.stopPropagation();
+
+    tasks.splice(index, 1);
+
+    localStorage.setItem(
+        "wattoTasks",
+        JSON.stringify(tasks)
+    );
+
+    showTasks();
+});
+
+dayTask.appendChild(dayLabel);
+dayTask.appendChild(dayDeleteButton);
+
+
+                if (task.done) {
+                    dayTask.classList.add("completed");
+                }
+
+                dayTask.draggable = true;
+
+                dayTask.addEventListener("click", function() {
+                    task.done = !task.done;
+
+                    localStorage.setItem(
+                        "wattoTasks",
+                        JSON.stringify(tasks)
+                    );
+
+                    showTasks();
+                });
+
+                dayTask.addEventListener("dragstart", function(event) {
+                    event.dataTransfer.setData("text/plain", String(index));
+                });
+
+                dayBox.appendChild(dayTask);
+            }
+        });
+    });
+}
+
+
+    // Yeni görev ekle
+    addButton.addEventListener("click", function() {
+        const taskText = taskInput.value.trim();
+
+        if (taskText === "") {
+            alert("First, write down a little task! 🌱");
+            return;
+        }
+
+       tasks.push({
+    text: taskText,
+    done: false,
+    day: null
+});
+
+        localStorage.setItem(
+            "wattoTasks",
+            JSON.stringify(tasks)
+        );
+
+        showTasks();
+        taskInput.value = "";
+    });
+
+    // Sayfa açıldığında görevleri göster
+    showTasks();
+
+    
+document.querySelectorAll(".day-tasks").forEach(function(dayBox) {
+    dayBox.addEventListener("dragover", function(event) {
+        event.preventDefault();
+    });
+
+    dayBox.addEventListener("drop", function(event) {
+        event.preventDefault();
+
+        const taskIndex = Number(
+            event.dataTransfer.getData("text/plain")
+        );
+
+        if (!Number.isInteger(taskIndex) || !tasks[taskIndex]) {
+            return;
+        }
+
+        tasks[taskIndex].day = dayBox.dataset.day;
+
+        localStorage.setItem(
+            "wattoTasks",
+            JSON.stringify(tasks)
+        );
+
+        showTasks();
+    });
+});
+
+</script>
+
+
+
+ </body>
+</html>

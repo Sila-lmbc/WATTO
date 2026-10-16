@@ -1,0 +1,1624 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watto — What to do?</title>
+
+    <style>
+ 
+:root {
+    --background: #f5f0e8;
+    --paper: #fffdf8;
+    --ink: #493b43;
+    --muted: #95858c;
+    --pink: #e8c5cd;
+    --pink-light: #f4e2e4;
+    --yellow: #f0dfab;
+    --green: #cbd8bd;
+    --blue: #cbd9e5;
+    --lilac: #dcd1e8;
+    --line: #e8ded8;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    color: var(--ink);
+    background:
+        radial-gradient(ellipse at 85% 5%, #eadde9 0%, transparent 32%),
+        radial-gradient(ellipse at 10% 45%, #f4e2d8 0%, transparent 35%),
+        var(--background);
+    font-family: "Trebuchet MS", sans-serif;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.topbar {
+    height: 76px;
+    padding: 0 4%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e8ded866;
+}
+
+.logo {
+    color: var(--ink);
+    font-size: 30px;
+    font-weight: bold;
+    letter-spacing: -1.5px;
+    text-decoration: none;
+}
+
+.logo span {
+    color: #ce8d9d;
+}
+
+.topbar nav a {
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.app-layout {
+    display: grid;
+    grid-template-columns: 245px minmax(0, 1fr);
+    gap: 34px;
+    max-width: 1600px;
+    margin: auto;
+    padding: 34px 4%;
+}
+
+.sidebar {
+    align-self: start;
+    padding: 25px 18px;
+    background: #fffdf899;
+    border: 1px solid #ffffffc9;
+    border-radius: 28px;
+}
+
+.profile {
+    text-align: center;
+}
+
+.avatar {
+    width: 92px;
+    height: 92px;
+    margin: 0 auto 12px;
+    display: grid;
+    place-items: center;
+    background: var(--yellow);
+    border-radius: 50%;
+    font-size: 46px;
+}
+
+.profile h2 {
+    margin: 8px 0;
+    font-size: 19px;
+}
+
+.profile p,
+.helper-text {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.avatar-options {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 17px;
+}
+
+.avatar-choice {
+    width: 31px;
+    height: 31px;
+    padding: 0;
+    background: #f3e9e4;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    font-size: 17px;
+}
+
+.avatar-choice:hover,
+.avatar-choice:focus {
+    border-color: #c58e9d;
+    background: var(--pink-light);
+}
+
+.category-section {
+    margin-top: 35px;
+}
+
+.category-section h3 {
+    margin-bottom: 15px;
+    font-size: 15px;
+}
+
+.category-form {
+    display: flex;
+    gap: 6px;
+}
+
+input,
+select {
+    min-width: 0;
+    padding: 11px 12px;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    outline: none;
+}
+
+input:focus,
+select:focus {
+    border-color: #c99aaa;
+}
+
+
+.category-form input[type="text"] {
+    width: 100%;
+    font-size: 12px;
+}
+
+
+.color-picker-button {
+    position: relative;
+    display: block;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    overflow: hidden;
+    border: 2px solid #fffdf8;
+    border-radius: 50%;
+    cursor: pointer;
+    background: #e8c5cd;
+}
+
+#category-color-preview {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: #e8c5cd;
+}
+
+.color-picker-button input[type="color"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    opacity: 0;
+    border: 0;
+    cursor: pointer;
+}
+
+
+
+
+.category-form button,
+#add-task-button {
+    border: 0;
+    border-radius: 14px;
+    background: var(--ink);
+    color: white;
+}
+
+.category-form button {
+    width: 39px;
+    flex-shrink: 0;
+    font-size: 20px;
+}
+
+#category-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-top: 17px;
+}
+
+.category-item {
+    padding: 11px 13px;
+    border-radius: 14px;
+    font-size: 13px;
+}
+
+.main-content {
+    min-width: 0;
+}
+
+.task-creation {
+    padding: 28px;
+    background: #fffdf8b8;
+    border: 1px solid #ffffffd1;
+    border-radius: 28px;
+}
+
+.eyebrow {
+    margin: 0 0 10px;
+    color: #a48c96;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.task-creation h1 {
+    margin: 0 0 22px;
+    font-size: clamp(25px, 3vw, 36px);
+    letter-spacing: -1.5px;
+}
+
+.task-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+}
+
+.task-form input {
+    flex: 1 1 180px;
+}
+
+.task-form select {
+    flex: 0 1 145px;
+}
+
+#add-task-button {
+    padding: 12px 17px;
+    background: #c58e9d;
+}
+
+.task-pool-section,
+.calendar-section {
+    margin-top: 34px;
+}
+
+.section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 15px;
+    margin-bottom: 17px;
+}
+
+.section-heading h2 {
+    margin: 0;
+    font-size: 23px;
+    letter-spacing: -0.7px;
+}
+
+.section-heading h2 span {
+    font-size: 18px;
+}
+
+.helper-text {
+    margin: 0;
+}
+
+#task-pool {
+    min-height: 155px;
+    padding: 18px;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse at 20% 20%, #f1dce1 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 90%, #dce5d3 0%, transparent 55%),
+        #f5e9e6;
+    border: 1px solid #ffffffc9;
+    border-radius: 25px;
+}
+
+
+#task-list {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 280px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+
+
+#task-list li,
+.calendar-task {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-wrap: anywhere;
+    border: 1px solid #ffffffd1;
+    border-radius: 999px;
+    cursor: grab;
+}
+
+#task-list li {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 12px 16px;
+    margin-bottom: 0;
+    background: #fffaf6;
+    font-size: 13px;
+}
+
+.task-label {
+    flex: 1;
+    overflow-wrap: anywhere;
+}
+
+.delete-task {
+    flex-shrink: 0;
+    padding: 0 0 0 5px;
+    color: #9e8188;
+    background: transparent;
+    border: 0;
+    font-size: 19px;
+    line-height: 1;
+}
+
+.completed {
+    background: #e1eadb !important;
+    color: #75846b;
+}
+
+.completed .task-label {
+    text-decoration: line-through;
+}
+
+.week-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(125px, 1fr));
+    gap: 11px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+}
+
+.day-column {
+    min-height: 220px;
+    padding: 15px 12px;
+    background: #fffdf8c9;
+    border: 1px solid #ffffffd1;
+    border-radius: 22px;
+}
+
+.day-column:nth-child(7n + 1) {
+    background-color: #f4e3e5;
+}
+
+.day-column:nth-child(7n + 2) {
+    background-color: #f5edcf;
+}
+
+.day-column:nth-child(7n + 3) {
+    background-color: #e2e9db;
+}
+
+.day-column:nth-child(7n + 4) {
+    background-color: #e0e8ef;
+}
+
+.day-column:nth-child(7n + 5) {
+    background-color: #eee3ed;
+}
+
+.day-column:nth-child(7n + 6) {
+    background-color: #f3e3d8;
+}
+
+.day-column:nth-child(7n) {
+    background-color: #e8e1f0;
+}
+
+.day-column h3 {
+    margin: 0 0 15px;
+    font-size: 13px;
+}
+
+.day-tasks {
+    min-height: 165px;
+}
+
+.calendar-task {
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding: 10px;
+    background: #fffdf8e8;
+    font-size: 12px;
+}
+
+#task-list li:active,
+.calendar-task:active {
+    cursor: grabbing;
+}
+
+@media (max-width: 850px) {
+    .app-layout {
+        grid-template-columns: 1fr;
+        gap: 22px;
+        padding: 22px 4%;
+    }
+
+    .sidebar {
+        padding: 22px;
+    }
+
+    .category-section {
+        margin-top: 25px;
+    }
+
+    .week-calendar {
+        grid-template-columns: repeat(7, minmax(145px, 1fr));
+    }
+}
+
+@media (max-width: 500px) {
+    .topbar {
+        height: 65px;
+    }
+
+    .task-creation {
+        padding: 20px;
+    }
+
+    .section-heading {
+        align-items: start;
+        flex-direction: column;
+    }
+}
+
+
+/* Renk seçme düğmesi */
+.color-picker-button {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    flex-shrink: 0;
+    border: 2px solid #fffdf8;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    background: #e8c5cd;
+}
+
+#category-color-preview {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #e8c5cd;
+}
+
+/* Renk seçme penceresi */
+.color-picker-panel {
+    position: absolute;
+    z-index: 10;
+    width: 260px;
+    margin-top: 10px;
+    padding: 16px;
+    background: #f8f1eb;
+    border: 1px solid #e8ded8;
+    border-radius: 22px;
+    box-shadow: 0 12px 30px #493b431c;
+}
+
+.color-picker-panel[hidden] {
+    display: none;
+}
+
+/* Ana renk skalası */
+.color-saturation {
+    position: relative;
+    height: 155px;
+    border-radius: 14px;
+    background-color: #e8c5cd;
+    background-image:
+        linear-gradient(to top, #000, transparent),
+        linear-gradient(to right, #fff, transparent);
+    cursor: crosshair;
+    touch-action: none;
+}
+
+/* Skalanın üzerindeki yuvarlak gösterge */
+.color-picker-handle {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    border: 2px solid white;
+    border-radius: 50%;
+    box-shadow: 0 1px 4px #493b4370;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+/* Alt renk çubuğu */
+#category-hue {
+    display: block;
+    width: 100%;
+    height: 14px;
+    margin: 16px 0;
+    padding: 0;
+    appearance: none;
+    border: 0;
+    border-radius: 999px;
+    cursor: pointer;
+    background: linear-gradient(
+        to right,
+        #f00,
+        #ff0,
+        #0f0,
+        #0ff,
+        #00f,
+        #f0f,
+        #f00
+    );
+}
+
+#category-hue::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 3px solid white;
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: 0 1px 4px #493b4380;
+}
+
+#category-hue::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border: 3px solid white;
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: 0 1px 4px #493b4380;
+}
+
+/* HEX kodu alanı */
+.color-hex-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 12px;
+    background: #fffaf6;
+    border: 1px solid #e8ded8;
+    border-radius: 999px;
+    color: #827365;
+    font-size: 13px;
+}
+
+#category-hex {
+    width: 100%;
+    min-width: 0;
+    padding: 7px 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #493b43;
+    font-size: 13px;
+}
+
+ 
+/* Renk düğmesinin yuvarlak görünümünü koru */
+.category-form {
+    position: relative;
+}
+
+.category-form .color-picker-button {
+    position: relative;
+    display: block;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    padding: 0;
+    flex-shrink: 0;
+    overflow: hidden;
+    border: 2px solid #fffdf8;
+    border-radius: 50%;
+    background: #e8c5cd;
+    cursor: pointer;
+}
+
+.category-form #category-color-preview {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #e8c5cd;
+}
+
+
+.color-picker-panel {
+    position: absolute;
+}
+
+.close-color-picker {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border: 1px solid #e8ded8;
+    border-radius: 50%;
+    background: #f4e2e4;
+    color: #493b43;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.close-color-picker:hover {
+    background: #e8c5cd;
+}
+
+.color-picker-panel {
+    padding-top: 44px;
+}
+
+
+
+/* Önemli görevler: yalnızca kendi kutuları büyüsün */
+
+#task-list li.important-task {
+    align-self: flex-start;
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 54px;
+    padding: 17px 20px;
+    font-size: 13px;
+    font-weight: normal;
+    border-radius: 999px;
+}
+
+
+#task-list li:not(.important-task) {
+    flex: 0 0 auto;
+    width: fit-content;
+}
+
+.day-tasks .calendar-task.important-task {
+    display: flex;
+    width: fit-content;
+    max-width: 100%;
+    min-height: 54px;
+    padding: 15px 12px;
+    font-weight: normal;
+    border-radius: 999px;
+}
+
+
+
+
+
+ </style>
+</head>
+
+<body>
+    <header class="topbar">
+        <a class="logo" href="#">watto<span>.</span></a>
+        <nav>
+            <a href="#week-calendar">My week</a>
+        </nav>
+    </header>
+
+    <main class="app-layout">
+        <aside class="sidebar">
+            <section class="profile">
+                <div class="avatar" id="selected-avatar">🐊</div>
+                <h2 id="profile-name">Little Watto</h2>
+                <p>Your tiny corner of focus.</p>
+
+                <div class="avatar-options" aria-label="Choose an avatar">
+                    <button type="button" class="avatar-choice" data-avatar="🐊">🐊</button>
+                    <button type="button" class="avatar-choice" data-avatar="🐸">🐸</button>
+                    <button type="button" class="avatar-choice" data-avatar="🐱">🐱</button>
+                    <button type="button" class="avatar-choice" data-avatar="🐻">🐻</button>
+                    <button type="button" class="avatar-choice" data-avatar="🐰">🐰</button>
+                </div>
+            </section>
+
+            <section class="category-section">
+                <h3>My categories</h3>
+
+                
+      <div class="category-form">
+         <input type="text" id="category-input" placeholder="New category...">
+
+<button type="button" class="color-picker-button" id="category-color-button" aria-label="Choose category color">
+    <span id="category-color-preview"></span>
+</button>
+
+<div class="color-picker-panel" id="color-picker-panel" hidden>
+  
+<button type="button" id="close-color-picker" class="close-color-picker" aria-label="Close color picker">×</button>
+
+    <div class="color-saturation" id="color-saturation">
+        <span class="color-picker-handle" id="color-picker-handle"></span>
+    </div>
+
+    <input type="range" id="category-hue" min="0" max="360" value="340" aria-label="Color hue">
+
+    <div class="color-hex-row">
+        <span>#</span>
+        <input type="text" id="category-hex" value="#e8c5cd" maxlength="7" aria-label="HEX color code">
+    </div>
+</div>
+
+
+         <button id="add-category-button" type="button">+</button>
+       </div>
+
+
+                <div id="category-list"></div>
+            </section>
+        </aside>
+
+        <section class="main-content">
+            <section class="task-creation">
+                <p class="eyebrow">A LITTLE STEP AT A TIME</p>
+                <h1>What's on your mind?</h1>
+
+                <div class="task-form">
+                    <input
+                        type="text"
+                        id="task-input"
+                        placeholder="Add a little task..."
+                    >
+
+                    <select id="task-category">
+                        <option value="">Choose a category</option>
+                    </select>
+
+                    <select id="task-importance">
+                        <option value="normal">Normal</option>
+                        <option value="important">Important ★</option>
+                    </select>
+
+                    <button id="add-task-button" type="button">Add task +</button>
+                </div>
+            </section>
+
+            <section class="task-pool-section">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">YOUR LITTLE IDEAS</p>
+                        <h2>Task pond <span>✳</span></h2>
+                    </div>
+                    <p class="helper-text">Drag a task into your week</p>
+                </div>
+
+                <div id="task-pool">
+                    <ul id="task-list"></ul>
+                </div>
+            </section>
+
+            <section class="calendar-section">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">MAKE ROOM FOR WHAT MATTERS</p>
+                        <h2 id="week-calendar">My week <span>🌷</span></h2>
+                    </div>
+                </div>
+
+                <div class="week-calendar">
+                    <div class="day-column">
+                        <h3>Monday</h3>
+                        <div class="day-tasks" data-day="Monday"></div>
+                    </div>
+
+                    <div class="day-column">
+                        <h3>Tuesday</h3>
+                        <div class="day-tasks" data-day="Tuesday"></div>
+                    </div>
+
+                    <div class="day-column">
+                        <h3>Wednesday</h3>
+                        <div class="day-tasks" data-day="Wednesday"></div>
+                    </div>
+
+                    <div class="day-column">
+                        <h3>Thursday</h3>
+                        <div class="day-tasks" data-day="Thursday"></div>
+                    </div>
+
+                    <div class="day-column">
+                        <h3>Friday</h3>
+                        <div class="day-tasks" data-day="Friday"></div>
+                    </div>
+
+                    <div class="day-column">
+                        <h3>Saturday</h3>
+                        <div class="day-tasks" data-day="Saturday"></div>
+                    </div>
+
+                    <div class="day-column">
+                        <h3>Sunday</h3>
+                        <div class="day-tasks" data-day="Sunday"></div>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script>
+        
+const taskInput = document.querySelector("#task-input");
+const addButton = document.querySelector("#add-task-button");
+const taskList = document.querySelector("#task-list");
+const taskCategory = document.querySelector("#task-category");
+const taskImportance = document.querySelector("#task-importance");
+
+const categoryInput = document.querySelector("#category-input");
+const addCategoryButton = document.querySelector("#add-category-button");
+const categoryList = document.querySelector("#category-list");
+const selectedAvatar = document.querySelector("#selected-avatar");
+
+
+
+const categoryColorButton = document.querySelector("#category-color-button");
+const categoryColorPreview = document.querySelector("#category-color-preview");
+const colorPickerPanel = document.querySelector("#color-picker-panel");
+const colorSaturation = document.querySelector("#color-saturation");
+const colorPickerHandle = document.querySelector("#color-picker-handle");
+const categoryHue = document.querySelector("#category-hue");
+const categoryHex = document.querySelector("#category-hex");
+
+let selectedCategoryColor = "#e8c5cd";
+let selectedHue = 340;
+let selectedSaturation = 0.16;
+let selectedValue = 0.91;
+
+function hsvToHex(h, s, v) {
+    const c = v * s;
+    const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+    const m = v - c;
+
+    let r = 0;
+    let g = 0;
+    let b = 0;
+
+    if (h < 60) {
+        r = c; g = x;
+    } else if (h < 120) {
+        r = x; g = c;
+    } else if (h < 180) {
+        g = c; b = x;
+    } else if (h < 240) {
+        g = x; b = c;
+    } else if (h < 300) {
+        r = x; b = c;
+    } else {
+        r = c; b = x;
+    }
+
+    const toHex = function(value) {
+        return Math.round((value + m) * 255)
+            .toString(16)
+            .padStart(2, "0");
+    };
+
+    return "#" + toHex(r) + toHex(g) + toHex(b);
+}
+
+
+
+function hexToHsv(hex) {
+    const cleanHex = hex.replace("#", "");
+
+    const r = parseInt(cleanHex.slice(0, 2), 16) / 255;
+    const g = parseInt(cleanHex.slice(2, 4), 16) / 255;
+    const b = parseInt(cleanHex.slice(4, 6), 16) / 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const delta = max - min;
+
+    let h = 0;
+
+    if (delta !== 0) {
+        if (max === r) {
+            h = 60 * (((g - b) / delta) % 6);
+        } else if (max === g) {
+            h = 60 * ((b - r) / delta + 2);
+        } else {
+            h = 60 * ((r - g) / delta + 4);
+        }
+    }
+
+    if (h < 0) h += 360;
+
+    return {
+        h: h,
+        s: max === 0 ? 0 : delta / max,
+        v: max
+    };
+}
+
+function updateColorPicker() {
+    selectedCategoryColor = hsvToHex(
+        selectedHue,
+        selectedSaturation,
+        selectedValue
+    );
+
+    colorSaturation.style.backgroundColor =
+        "hsl(" + selectedHue + ", 100%, 50%)";
+
+    colorPickerHandle.style.left =
+        (selectedSaturation * 100) + "%";
+
+    colorPickerHandle.style.top =
+        ((1 - selectedValue) * 100) + "%";
+
+    categoryColorPreview.style.backgroundColor =
+        selectedCategoryColor;
+
+    categoryHex.value = selectedCategoryColor;
+}
+
+categoryColorButton.addEventListener("click", function() {
+    colorPickerPanel.hidden = !colorPickerPanel.hidden;
+});
+
+categoryHue.addEventListener("input", function() {
+    selectedHue = Number(categoryHue.value);
+    updateColorPicker();
+});
+
+function updateColorFromPointer(event) {
+    const rect = colorSaturation.getBoundingClientRect();
+
+    selectedSaturation = Math.max(0, Math.min(
+        1, (event.clientX - rect.left) / rect.width
+    ));
+
+    selectedValue = 1 - Math.max(0, Math.min(
+        1, (event.clientY - rect.top) / rect.height
+    ));
+
+    updateColorPicker();
+}
+
+colorSaturation.addEventListener("pointerdown", function(event) {
+    colorSaturation.setPointerCapture(event.pointerId);
+    updateColorFromPointer(event);
+});
+
+colorSaturation.addEventListener("pointermove", function(event) {
+    if (event.buttons > 0) {
+        updateColorFromPointer(event);
+    }
+});
+
+categoryHex.addEventListener("change", function() {
+    const hex = categoryHex.value.trim();
+
+    if (!/^#[0-9a-fA-F]{6}$/.test(hex)) {
+        categoryHex.value = selectedCategoryColor;
+        return;
+    }
+
+    const hsv = hexToHsv(hex);
+
+    selectedHue = hsv.h;
+    selectedSaturation = hsv.s;
+    selectedValue = hsv.v;
+
+    categoryHue.value = selectedHue;
+    updateColorPicker();
+});
+
+updateColorPicker();
+
+
+const closeColorPicker = document.querySelector("#close-color-picker");
+
+closeColorPicker.addEventListener("click", function() {
+    colorPickerPanel.hidden = true;
+});
+
+
+document.addEventListener("pointerdown", function(event) {
+    const clickedInsidePanel = colorPickerPanel.contains(event.target);
+    const clickedColorButton = categoryColorButton.contains(event.target);
+
+    if (!colorPickerPanel.hidden && !clickedInsidePanel && !clickedColorButton) {
+        colorPickerPanel.hidden = true;
+    }
+});
+
+
+
+let tasks = JSON.parse(localStorage.getItem("wattoTasks")) || [];
+let categories = JSON.parse(localStorage.getItem("wattoCategories")) || [];
+
+const categoryColors = [
+    "#e8c5cd",
+    "#f0dfab",
+    "#cbd8bd",
+    "#cbd9e5",
+    "#dcd1e8",
+    "#f1d4bd"
+];
+
+function saveTasks() {
+    localStorage.setItem("wattoTasks", JSON.stringify(tasks));
+}
+
+function saveCategories() {
+    localStorage.setItem("wattoCategories", JSON.stringify(categories));
+}
+
+
+function getCategoryColor(category) {
+    const foundCategory = categories.find(function(item) {
+        return (typeof item === "string" ? item : item.name) === category;
+    });
+
+    if (foundCategory && typeof foundCategory === "object") {
+        return foundCategory.color;
+    }
+
+    const index = categories.findIndex(function(item) {
+        return item === category;
+    });
+
+    return categoryColors[(index < 0 ? 0 : index) % categoryColors.length];
+}
+
+
+function showCategories() {
+    categoryList.innerHTML = "";
+    taskCategory.innerHTML = '<option value="">Choose a category</option>';
+
+    categories.forEach(function(category) {
+        const categoryName = typeof category === "string"
+            ? category
+            : category.name;
+
+        const categoryColor = typeof category === "string"
+            ? categoryColors[categories.indexOf(category) % categoryColors.length]
+            : category.color;
+
+        const tag = document.createElement("div");
+        tag.className = "category-item";
+        tag.style.backgroundColor = categoryColor;
+
+        const name = document.createElement("span");
+        name.textContent = categoryName;
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "delete-task";
+        deleteButton.textContent = "×";
+        deleteButton.title = "Delete category";
+
+        deleteButton.addEventListener("click", function() {
+            categories = categories.filter(function(item) {
+                return (typeof item === "string" ? item : item.name) !== categoryName;
+            });
+
+            tasks.forEach(function(task) {
+                if (task.category === categoryName) {
+                    task.category = "";
+                }
+            });
+
+            saveCategories();
+            saveTasks();
+            showCategories();
+            showTasks();
+        });
+
+        tag.append(name, deleteButton);
+        categoryList.appendChild(tag);
+
+        const option = document.createElement("option");
+        option.value = categoryName;
+        option.textContent = categoryName;
+        taskCategory.appendChild(option);
+    });
+}
+
+addCategoryButton.addEventListener("click", function() {
+    const name = categoryInput.value.trim();
+
+    if (!name) {
+        alert("First, give your category a name! 🌱");
+        return;
+    }
+
+    const exists = categories.some(function(category) {
+        return (typeof category === "string" ? category : category.name)
+            .toLowerCase() === name.toLowerCase();
+    });
+
+    if (exists) {
+        alert("This category already exists!");
+        return;
+    }
+
+    
+categories.push({
+    name: name,
+    color: selectedCategoryColor
+});
+
+
+    saveCategories();
+    categoryInput.value = "";
+    showCategories();
+});
+
+function showTasks() {
+    taskList.innerHTML = "";
+
+    tasks.forEach(function(task, index) {
+        if (task.day !== null && task.day !== undefined) {
+            return;
+        }
+
+         const item = document.createElement("li");
+        if (!task.id) {
+     task.id = "task-" + Date.now() + "-" + Math.random().toString(36).slice(2);
+        }
+
+        item.dataset.bubbleId = String(task.id);
+        item.draggable = true;
+
+        const label = document.createElement("span");
+        label.className = "task-label";
+        label.textContent = task.text;
+
+        const category = categories.find(function(entry) {
+            return (typeof entry === "string" ? entry : entry.name) === task.category;
+        });
+
+        if (task.category) {
+            item.style.backgroundColor = category
+                ? getCategoryColor(task.category)
+                : "#fffaf6";
+        }
+
+       
+if (task.important) {
+    item.classList.add("important-task");
+}
+
+
+        if (task.done) {
+            item.classList.add("completed");
+        }
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "delete-task";
+        deleteButton.textContent = "×";
+        deleteButton.title = "Delete task";
+
+        deleteButton.addEventListener("click", function(event) {
+            event.stopPropagation();
+            tasks.splice(index, 1);
+            saveTasks();
+            showTasks();
+        });
+
+        item.append(label, deleteButton);
+
+        item.addEventListener("click", function() {
+            task.done = !task.done;
+            saveTasks();
+            showTasks();
+        });
+
+        item.addEventListener("dragstart", function(event) {
+            event.dataTransfer.setData("text/plain", String(index));
+        });
+
+        taskList.appendChild(item);
+    });
+
+    document.querySelectorAll(".day-tasks").forEach(function(dayBox) {
+        dayBox.innerHTML = "";
+
+        tasks.forEach(function(task, index) {
+            if (task.day !== dayBox.dataset.day) {
+                return;
+            }
+
+            const item = document.createElement("div");
+            item.className = "calendar-task";
+            item.draggable = true;
+
+            const label = document.createElement("span");
+            label.className = "task-label";
+            label.textContent = task.text;
+
+            if (task.category) {
+                item.style.backgroundColor = getCategoryColor(task.category);
+            }
+
+           if (task.important) {
+             item.classList.add("important-task");
+            }
+
+            if (task.done) {
+                item.classList.add("completed");
+            }
+
+            const deleteButton = document.createElement("button");
+            deleteButton.type = "button";
+            deleteButton.className = "delete-task";
+            deleteButton.textContent = "×";
+            deleteButton.title = "Delete task";
+
+            deleteButton.addEventListener("click", function(event) {
+                event.stopPropagation();
+                tasks.splice(index, 1);
+                saveTasks();
+                showTasks();
+            });
+
+            item.append(label, deleteButton);
+
+            item.addEventListener("click", function() {
+                task.done = !task.done;
+                saveTasks();
+                showTasks();
+            });
+
+            item.addEventListener("dragstart", function(event) {
+                event.dataTransfer.setData("text/plain", String(index));
+            });
+
+            dayBox.appendChild(item);
+        });
+    });
+        startTaskBubbles();
+}
+
+
+
+
+let taskBubbleFrame = null;
+
+const bubblePositions = new Map();
+
+function startTaskBubbles() {
+    if (taskBubbleFrame !== null) {
+        cancelAnimationFrame(taskBubbleFrame);
+        taskBubbleFrame = null;
+    }
+
+    const list = document.getElementById("task-list");
+    const items = Array.from(list.children);
+
+    if (items.length === 0) return;
+
+    const areaW = list.clientWidth;
+    const areaH = list.clientHeight;
+
+    if (!areaW || !areaH) return;
+
+    const bubbles = [];
+
+    
+items.forEach(function(item, index) {
+    const id = item.dataset.bubbleId;
+    const w = item.offsetWidth;
+    const h = item.offsetHeight;
+
+    let saved = bubblePositions.get(id);
+
+    let x;
+    let y;
+    let vx;
+    let vy;
+
+    if (saved) {
+        // Daha önce var olan görev: konumunu ve hızını koru
+        x = saved.x;
+        y = saved.y;
+        vx = saved.vx;
+        vy = saved.vy;
+    } else {
+        // Yeni görev: yalnızca bu baloncuk için yer bul
+        let placed = false;
+        x = 0;
+        y = 0;
+
+        for (let attempt = 0; attempt < 100; attempt++) {
+            x = Math.random() * Math.max(0, areaW - w);
+            y = Math.random() * Math.max(0, areaH - h);
+
+            const overlaps = bubbles.some(function(other) {
+                return (
+                    x < other.x + other.w &&
+                    x + w > other.x &&
+                    y < other.y + other.h &&
+                    y + h > other.y
+                );
+            });
+
+            if (!overlaps) {
+                placed = true;
+                break;
+            }
+        }
+
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 1.2 + Math.random() * 1.1;
+
+        vx = Math.cos(angle) * speed;
+        vy = Math.sin(angle) * speed;
+    }
+
+    const bubble = {
+        el: item,
+        id: id,
+        w: w,
+        h: h,
+        x: x,
+        y: y,
+        vx: vx,
+        vy: vy,
+        seed: saved ? saved.seed : Math.random() * 10
+    };
+
+    item.style.left = x + "px";
+    item.style.top = y + "px";
+    item.style.transform = "none";
+
+    bubbles.push(bubble);
+    bubblePositions.set(id, bubble);
+});
+
+
+    let lastTime = 0;
+
+    function animate(time) {
+        if (!list.isConnected) {
+            taskBubbleFrame = null;
+            return;
+        }
+
+        const dt = lastTime
+            ? Math.min((time - lastTime) / 16.67, 2)
+            : 1;
+
+        lastTime = time;
+
+        const width = list.clientWidth;
+        const height = list.clientHeight;
+
+        bubbles.forEach(function(b) {
+            // Hafif, sürekli yön değişimi: sinek gibi dolaşma
+            const t = time * 0.00045 + b.seed;
+
+            b.vx += Math.sin(t) * 0.018 * dt;
+            b.vy += Math.cos(t * 0.77) * 0.018 * dt;
+
+            // Hareket hızını dengede tut
+            const speed = Math.hypot(b.vx, b.vy);
+            const maxSpeed = 2.8;
+            const minSpeed = 1.0;
+
+            if (speed > maxSpeed) {
+                b.vx = b.vx / speed * maxSpeed;
+                b.vy = b.vy / speed * maxSpeed;
+            } else if (speed < minSpeed) {
+                const angle = Math.random() * Math.PI * 2;
+                b.vx = Math.cos(angle) * minSpeed;
+                b.vy = Math.sin(angle) * minSpeed;
+            }
+
+            b.x += b.vx * dt;
+            b.y += b.vy * dt;
+
+            // Sol ve sağ duvarlardan sekme
+            if (b.x <= 0) {
+                b.x = 0;
+                b.vx = Math.abs(b.vx);
+            } else if (b.x + b.w >= width) {
+                b.x = Math.max(0, width - b.w);
+                b.vx = -Math.abs(b.vx);
+            }
+
+            // Üst ve alt duvarlardan sekme
+            if (b.y <= 0) {
+                b.y = 0;
+                b.vy = Math.abs(b.vy);
+            } else if (b.y + b.h >= height) {
+                b.y = Math.max(0, height - b.h);
+                b.vy = -Math.abs(b.vy);
+            }
+        });
+
+        // Baloncuklar arasında çarpışma
+        for (let i = 0; i < bubbles.length; i++) {
+            for (let j = i + 1; j < bubbles.length; j++) {
+                const a = bubbles[i];
+                const b = bubbles[j];
+
+                const ax = a.x + a.w / 2;
+                const ay = a.y + a.h / 2;
+                const bx = b.x + b.w / 2;
+                const by = b.y + b.h / 2;
+
+                const dx = bx - ax;
+                const dy = by - ay;
+
+                const overlapX =
+                    (a.w + b.w) / 2 - Math.abs(dx);
+                const overlapY =
+                    (a.h + b.h) / 2 - Math.abs(dy);
+
+                if (overlapX > 0 && overlapY > 0) {
+                    // En küçük örtüşme yönünde ayır
+                    if (overlapX < overlapY) {
+                        const direction = dx >= 0 ? 1 : -1;
+                        const push = overlapX / 2 + 0.5;
+
+                        a.x -= direction * push;
+                        b.x += direction * push;
+
+                        // Birbirlerine doğru yaklaşıyorlarsa sek
+                        if ((a.vx - b.vx) * direction > 0) {
+                            const temp = a.vx;
+                            a.vx = b.vx;
+                            b.vx = temp;
+                        }
+                    } else {
+                        const direction = dy >= 0 ? 1 : -1;
+                        const push = overlapY / 2 + 0.5;
+
+                        a.y -= direction * push;
+                        b.y += direction * push;
+
+                        if ((a.vy - b.vy) * direction > 0) {
+                            const temp = a.vy;
+                            a.vy = b.vy;
+                            b.vy = temp;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Çarpışmadan sonra sınırların dışına çıkmalarını önle
+       
+        bubbles.forEach(function(b) {
+            b.x = Math.max(0, Math.min(b.x, width - b.w));
+            b.y = Math.max(0, Math.min(b.y, height - b.h));
+
+            b.el.style.left = b.x + "px";
+            b.el.style.top = b.y + "px";
+
+            bubblePositions.set(b.id, {
+                x: b.x,
+                y: b.y,
+                vx: b.vx,
+                vy: b.vy,
+                seed: b.seed
+            });
+        });
+
+        taskBubbleFrame = requestAnimationFrame(animate);
+    }
+
+    taskBubbleFrame = requestAnimationFrame(animate);
+}
+
+
+
+
+
+addButton.addEventListener("click", function() {
+    const text = taskInput.value.trim();
+
+    if (!text) {
+        alert("First, write down a little task! 🌱");
+        return;
+    }
+
+    tasks.push({
+        text: text,
+        done: false,
+        day: null,
+        category: taskCategory.value,
+        important: taskImportance.value === "important"
+    });
+
+    saveTasks();
+    showTasks();
+
+    taskInput.value = "";
+    taskCategory.value = "";
+    taskImportance.value = "normal";
+});
+
+
+
+const taskPool = document.querySelector("#task-pool");
+
+taskPool.addEventListener("dragover", function(event) {
+    event.preventDefault();
+});
+
+taskPool.addEventListener("drop", function(event) {
+    event.preventDefault();
+
+    const index = Number(event.dataTransfer.getData("text/plain"));
+
+    if (!Number.isInteger(index) || !tasks[index]) {
+        return;
+    }
+
+    tasks[index].day = null;
+
+    saveTasks();
+    showTasks();
+});
+
+
+
+document.querySelectorAll(".day-tasks").forEach(function(dayBox) {
+    dayBox.addEventListener("dragover", function(event) {
+        event.preventDefault();
+    });
+
+    dayBox.addEventListener("drop", function(event) {
+        event.preventDefault();
+
+        const index = Number(event.dataTransfer.getData("text/plain"));
+
+        if (!Number.isInteger(index) || !tasks[index]) {
+            return;
+        }
+
+        tasks[index].day = dayBox.dataset.day;
+        saveTasks();
+        showTasks();
+    });
+});
+
+document.querySelectorAll(".avatar-choice").forEach(function(button) {
+    button.addEventListener("click", function() {
+        selectedAvatar.textContent = button.dataset.avatar;
+
+        document.querySelectorAll(".avatar-choice").forEach(function(choice) {
+            choice.style.outline = "none";
+        });
+
+        button.style.outline = "2px solid #c58e9d";
+        button.style.outlineOffset = "2px";
+    });
+});
+
+showCategories();
+showTasks();
+
+    </script>
+</body>
+</html>
